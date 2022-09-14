@@ -20,7 +20,7 @@ const {
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("API Working on port 5000 ");
 });
 
 app.get("/questions", async (req, res) => {

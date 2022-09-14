@@ -35,10 +35,10 @@ const getSearchResult = async (data) => {
   const params = {
     TableName: TABLE_NAME,
     FilterExpression: "contains(qa, :qa)  ",
-    //FilterExpression: "question in (:q )  ",
+    
     ExpressionAttributeValues: {
       ":qa": { S: data },
-      //":a": { S:  data},
+      
     },
   };
 
