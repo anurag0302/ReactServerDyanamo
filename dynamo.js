@@ -58,12 +58,15 @@ const updateQuestion = async (question) => {
     Key: {
       questionId: question.id,
     },
-    UpdateExpression: "set question = :q, answer = :a, qa = :qa, dateLog = :dt",
+    UpdateExpression:
+      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,Secondary=:sc",
     ExpressionAttributeValues: {
       ":q": question.question,
       ":a": question.answer,
-      ":qa": question.question.toLowerCase() +" "+question.answer.toLowerCase(),
+      ":qa":
+        question.question.toLowerCase() + " " + question.answer.toLowerCase(),
       ":dt": question.dateLog,
+      ":sc": question.Secondary,
     },
   };
   return await dynamoClient.update(params).promise();
