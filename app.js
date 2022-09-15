@@ -17,12 +17,21 @@ const {
   updateQuestion
 } = require("./dynamo");
 
+const {
+  getUsers,
+  getUserById,
+  addUser,
+  deleteUser,
+  updateUser
+} = require("./userinfo");
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("API Working on port 5000 ");
 });
 
+// Api for QuestionAnswers
 app.get("/questions", async (req, res) => {
   try {
     const questions = await getQuestions();
@@ -95,6 +104,79 @@ app.delete("/questions/:id", async (req, res) => {
     res.status(500).json({ err: "Something went wrong" });
   }
 });
+
+
+
+//UserInfo Working Api
+
+app.get("/userinfo", async (req, res) => {
+  try {
+    const users = await getUsers();
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+app.get("/userinfo/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const question = await getUserById(id);
+    res.json(question);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+
+
+app.post("/userinfo", async (req, res) => {
+
+  const {id,fullName,password,role} = req.body;
+  
+  
+  const data={id:id,fullName:fullName,password:password,role:role}
+  try {
+    const newUser = await addUser(data);
+    res.json(newUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+app.put("/userinfo/:id", async (req, res) => {
+  const user = req.body;
+  const { id } = req.params;
+
+  user.id = id;
+  try {
+    const editUser = await updateUser(user);
+    res.json(editUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+app.delete("/userinfo/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    res.json(await deleteUser(id));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+
+
+
+
+
+
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
