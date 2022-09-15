@@ -46,6 +46,7 @@ const getSearchResult = async (data) => {
 };
 
 const addOrUpdateQuestion = async (question) => {
+  
   const params = {
     TableName: TABLE_NAME,
     Item: question,
@@ -59,14 +60,15 @@ const updateQuestion = async (question) => {
       questionId: question.id,
     },
     UpdateExpression:
-      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,Secondary=:sc",
+      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,secondary=:sc",
     ExpressionAttributeValues: {
       ":q": question.question,
+
       ":a": question.answer,
       ":qa":
         question.question.toLowerCase() + " " + question.answer.toLowerCase(),
       ":dt": question.dateLog,
-      ":sc": question.Secondary,
+      ":sc": question.secondary,
     },
   };
   return await dynamoClient.update(params).promise();

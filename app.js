@@ -59,11 +59,11 @@ app.get("/questionsans/:data", async (req, res) => {
 
 app.post("/questions", async (req, res) => {
 
-  const {question,answer,status,dateLog} = req.body;
+  const {question,answer,status,dateLog,secondary} = req.body;
   
   let id=uuidv4();
   const qa=question.toLowerCase()+" "+answer.toLowerCase();
-  const data={question:question,answer:answer,questionId:id,qa: qa,status:status,dateLog:dateLog}
+  const data={question:question,answer:answer,questionId:id,qa: qa,status:status,dateLog:dateLog,secondary:secondary}
   try {
     const newQuestion = await addOrUpdateQuestion(data);
     res.json(newQuestion);
