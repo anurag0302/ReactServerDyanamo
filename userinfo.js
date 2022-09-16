@@ -24,9 +24,11 @@ const getUserById = async (id) => {
 
 
 const addUser = async (userinfo) => {
+  console.log(userinfo.id)
   const params = {
     TableName: TABLE_NAME,
     Item: userinfo,
+    ConditionExpression:'attribute_not_exists(id)'
   };
   return await dynamoClient.put(params).promise();
 };
