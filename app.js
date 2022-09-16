@@ -134,10 +134,10 @@ app.get("/userinfo/:id", async (req, res) => {
 
 app.post("/userinfo", async (req, res) => {
 
-  const {id,fullName,password,role} = req.body;
+  const {id,fullName,password,rolePosition} = req.body;
   
   
-  const data={id:id,fullName:fullName,password:password,role:role}
+  const data={id:id,fullName:fullName,password:password,rolePosition:rolePosition}
   try {
     const newUser = await addUser(data);
     res.json(newUser);
