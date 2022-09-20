@@ -34,14 +34,11 @@ const getQuestionById = async (id) => {
 const getSearchResult = async (data) => {
   const params = {
     TableName: TABLE_NAME,
-    FilterExpression: "contains(qa, :qa)  ",
-    
+    FilterExpression: "contains(qa, :qa)",   
     ExpressionAttributeValues: {
-      ":qa": { S: data },
-      
+      ":qa": { S: data },   
     },
   };
-
   return await docClient.scan(params).promise();
 };
 
@@ -63,7 +60,6 @@ const updateQuestion = async (question) => {
       "set question = :q, answer = :a, qa = :qa, dateLog = :dt,secondary=:sc",
     ExpressionAttributeValues: {
       ":q": question.question,
-
       ":a": question.answer,
       ":qa":
         question.question.toLowerCase() + " " + question.answer.toLowerCase(),

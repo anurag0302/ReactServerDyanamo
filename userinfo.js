@@ -11,12 +11,17 @@ const getUsers = async () => {
   return questions;
 };
 
-const getUserById = async (id) => {
+
+
+
+
+const login = async (data) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
-      id: id,
+      id: data.id,
     },
+    
   };
   return await dynamoClient.get(params).promise();
 };
@@ -62,9 +67,10 @@ const deleteUser = async (id) => {
 
 module.exports = {
  getUsers,
- getUserById,
+ login,
  addUser,
  updateUser,
  deleteUser,
+ 
  
 };

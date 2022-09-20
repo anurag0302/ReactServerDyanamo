@@ -14,15 +14,16 @@ const {
   deleteQuestion,
   getQuestionById,
   getSearchResult,
-  updateQuestion
+  updateQuestion,
 } = require("./dynamo");
 
 const {
   getUsers,
-  getUserById,
+  login,
   addUser,
   deleteUser,
-  updateUser
+  updateUser,
+  getUsersTest
 } = require("./userinfo");
 
 app.use(express.json());
@@ -119,16 +120,29 @@ app.get("/userinfo", async (req, res) => {
   }
 });
 
-app.get("/userinfo/:id", async (req, res) => {
-  const id = req.params.id;
+
+
+
+app.post("/logininfo", async (req, res) => {
+
+  const {id,password} = req.body;
+  
+  
   try {
-    const question = await getUserById(id);
-    res.json(question);
+    const newUser = await login(req.body);
+    if(newUser.Item.password===password){
+      res.json(newUser);
+    }
+    else{
+      res.status(500).json({ err: "Invalid cred Found" });
+    }
+    
   } catch (err) {
     console.error(err);
     res.status(500).json({ err: "Something went wrong" });
   }
 });
+
 
 
 
