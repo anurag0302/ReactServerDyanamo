@@ -126,17 +126,16 @@ app.get("/userinfo", async (req, res) => {
 app.post("/logininfo", async (req, res) => {
 
   const {id,password} = req.body;
-  
+ 
   
   try {
     const newUser = await login(req.body);
-    // if(newUser.Item.password===password){
-      
-    // }
-    // else{
-    //   res.status(500).json({ err: "Invalid cred Found" });
-    // }
-    res.json(newUser);
+    if(newUser.Item.password===password){
+      res.json(newUser);
+    }
+    else{
+      res.status(500).json({ err: "Invalid cred Found" });
+    }
     
   } catch (err) {
     console.error(err);

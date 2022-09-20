@@ -21,13 +21,13 @@ const login = async (data) => {
     Key: {
       id: data.id,
     },
-    FilterExpression: "password = :pass",
-    ExpressionAttributeValues: {
-        ":pass" : data.password
-    } 
+    // FilterExpression: "password = :pass",
+    // ExpressionAttributeValues: {
+    //     ":pass" : data.password
+    // } 
     
   };
-  return await dynamoClient.scan(params).promise();
+  return await dynamoClient.get(params).promise();
 };
 
 
