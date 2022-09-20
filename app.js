@@ -130,12 +130,13 @@ app.post("/logininfo", async (req, res) => {
   
   try {
     const newUser = await login(req.body);
-    if(newUser.Item.password===password){
-      res.json(newUser);
-    }
-    else{
-      res.status(500).json({ err: "Invalid cred Found" });
-    }
+    // if(newUser.Item.password===password){
+      
+    // }
+    // else{
+    //   res.status(500).json({ err: "Invalid cred Found" });
+    // }
+    res.json(newUser);
     
   } catch (err) {
     console.error(err);
