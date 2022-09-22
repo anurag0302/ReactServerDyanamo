@@ -9,7 +9,7 @@ const {
 
 const app = express();
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
-
+app.use("/profile", express.static("upload"));
 const {
   addOrUpdateQuestion,
   getQuestions,
@@ -89,12 +89,13 @@ const upload = multer({ storage: storage }).single("image");
 
 
 app.post("/questions",upload, async (req, res) => {
+  console.log(req.file)
 
   const {question,answer,status,dateLog,secondary} = JSON.parse(req.body.data);
 
-  let imageLocation="";
+  let imageLocation="null";
   if(req.file){ 
-    imageLocation="upload/"+req.file.filename;
+    imageLocation="http://localhost:5000/profile/"+req.file.filename;
     console.log(imageLocation)
   }
   
