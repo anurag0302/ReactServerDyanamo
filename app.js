@@ -70,12 +70,38 @@ app.get("/questionsans/:data", async (req, res) => {
   });
 
 
-app.post("/questions", async (req, res) => {
-  const {question,answer,status,dateLog,secondary} = req.body;
+  //storage---------------------------------------
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const value = "upload/";
+    cb(null, value);
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      `${file.fieldname}_${uuidv4()}${path.extname(
+        file.originalname.toLowerCase()
+      )}`
+    );
+  },
+});
+const upload = multer({ storage: storage }).single("image");
+
+
+app.post("/questions",upload, async (req, res) => {
+
+  const {question,answer,status,dateLog,secondary} = JSON.parse(req.body.data);
+
+  let imageLocation="";
+  if(req.file){ 
+    imageLocation="upload/"+req.file.filename;
+    console.log(imageLocation)
+  }
+  
   
   let id=uuidv4();
   const qa=question.toLowerCase()+" "+answer.toLowerCase();
-  const data={question:question,answer:answer,questionId:id,qa: qa,status:status,dateLog:dateLog,secondary:secondary}
+  const data={question:question,answer:answer,questionId:id,qa: qa,status:status,dateLog:dateLog,secondary:secondary,imageLocation:imageLocation}
   try {
     const newQuestion = await addOrUpdateQuestion(data);
     res.json(newQuestion);
@@ -108,7 +134,7 @@ app.delete("/questions/:id", async (req, res) => {
   }
 });
 
-//UserInfo Working Api-----------------------------------------------------------------------------------------
+//UserInfo Working Api
 
 app.get("/userinfo", async (req, res) => {
   try {
