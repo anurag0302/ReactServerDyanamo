@@ -11,6 +11,17 @@ const getUsers = async () => {
   return questions;
 };
 
+const getUserById = async (id) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      id: id,
+    },
+  };
+  return await dynamoClient.get(params).promise();
+};
+
+
 
 
 
@@ -49,10 +60,9 @@ const updateUser = async (user) => {
       id: user.id,
     },
     UpdateExpression:
-      "set fullName = :fullName, password = :password, rolePosition = :rolePosition",
+      "set fullName = :fullName,rolePosition = :rolePosition",
     ExpressionAttributeValues: {
       ":fullName": user.fullName,
-      ":password": user.password,
       ":rolePosition": user.rolePosition,
     },
   };
@@ -75,6 +85,7 @@ module.exports = {
  addUser,
  updateUser,
  deleteUser,
+ getUserById
  
  
 };

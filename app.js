@@ -8,7 +8,7 @@ const {
 
 
 const app = express();
-app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 
 const {
   addOrUpdateQuestion,
@@ -25,7 +25,7 @@ const {
   addUser,
   deleteUser,
   updateUser,
-  getUsersTest
+  getUserById
 } = require("./userinfo");
 
 app.use(express.json());
@@ -69,38 +69,9 @@ app.get("/questionsans/:data", async (req, res) => {
     }
   });
 
-  //
-  const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "upload/");
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      `${file.fieldname}_${Date.now()}${path.extname(
-        file.originalname.toLowerCase()
-      )}`
-    );
-  },
-});
-
-const upload = multer({ storage: storage }).single("avatar");
-
 
 app.post("/questions", async (req, res) => {
-  upload(req, res, function (err) {
-    if (err) {
-      return res.end("Error uploading file.");
-    } else {
-      res.json({
-        success: 1,
-      });
-    }
-    //  res.end("File is uploaded");
-  });
-
   const {question,answer,status,dateLog,secondary} = req.body;
-
   
   let id=uuidv4();
   const qa=question.toLowerCase()+" "+answer.toLowerCase();
@@ -137,9 +108,7 @@ app.delete("/questions/:id", async (req, res) => {
   }
 });
 
-
-
-//UserInfo Working Api
+//UserInfo Working Api-----------------------------------------------------------------------------------------
 
 app.get("/userinfo", async (req, res) => {
   try {
@@ -151,14 +120,20 @@ app.get("/userinfo", async (req, res) => {
   }
 });
 
-
+app.get("/userinfo/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await getUserById(id);
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
 
 
 app.post("/logininfo", async (req, res) => {
-
   const {id,password} = req.body;
- 
-  
   try {
     const newUser = await login(req.body);
     if(newUser.Item.password===password){
@@ -173,8 +148,6 @@ app.post("/logininfo", async (req, res) => {
     res.status(500).json({ err: "Something went wrong" });
   }
 });
-
-
 
 
 app.post("/userinfo", async (req, res) => {
