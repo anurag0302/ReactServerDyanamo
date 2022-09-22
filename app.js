@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
 const { 
   v4: uuidv4,
 } = require('uuid');
 
 
 const app = express();
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({credentials: true, origin: 'http://localhost:3001'}));
 
 const {
   addOrUpdateQuestion,
@@ -67,9 +69,38 @@ app.get("/questionsans/:data", async (req, res) => {
     }
   });
 
+  //
+  const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "upload/");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      `${file.fieldname}_${Date.now()}${path.extname(
+        file.originalname.toLowerCase()
+      )}`
+    );
+  },
+});
+
+const upload = multer({ storage: storage }).single("avatar");
+
+
 app.post("/questions", async (req, res) => {
+  upload(req, res, function (err) {
+    if (err) {
+      return res.end("Error uploading file.");
+    } else {
+      res.json({
+        success: 1,
+      });
+    }
+    //  res.end("File is uploaded");
+  });
 
   const {question,answer,status,dateLog,secondary} = req.body;
+
   
   let id=uuidv4();
   const qa=question.toLowerCase()+" "+answer.toLowerCase();
