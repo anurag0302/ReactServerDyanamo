@@ -43,6 +43,7 @@ const getSearchResult = async (data) => {
 };
 
 const addOrUpdateQuestion = async (question) => {
+  
   const params = {
     TableName: TABLE_NAME,
     Item: question,
