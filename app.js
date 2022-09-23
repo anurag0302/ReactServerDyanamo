@@ -89,7 +89,7 @@ const upload = multer({ storage: storage }).single("image");
 
 
 app.post("/questions",upload, async (req, res) => {
-  console.log(req.file)
+ 
 
   const {question,answer,status,dateLog,secondary} = JSON.parse(req.body.data);
 
@@ -112,12 +112,25 @@ app.post("/questions",upload, async (req, res) => {
   }
 });
 
-app.put("/questions/:id", async (req, res) => {
-  const question = req.body;
+app.put("/questions/:id",upload, async (req, res) => {
+  console.log("yesy")
+
+  const question = JSON.parse(req.body.data);
+
+  let imageLocation="null";
+  if(req.file){ 
+    imageLocation="http://localhost:5000/profile/"+req.file.filename;
+    
+  }
+  else{
+    imageLocation=question.secondary.imgdata
+  }
+
+  
   const { id } = req.params;
   question.id = id;
   try {
-    const newQuestion = await updateQuestion(question);
+    const newQuestion = await updateQuestion(question,imageLocation);
     res.json(newQuestion);
   } catch (err) {
     console.error(err);

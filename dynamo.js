@@ -50,14 +50,14 @@ const addOrUpdateQuestion = async (question) => {
   };
   return await dynamoClient.put(params).promise();
 };
-const updateQuestion = async (question) => {
+const updateQuestion = async (question,imageLocation) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
       questionId: question.id,
     },
     UpdateExpression:
-      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,secondary=:sc",
+      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,secondary=:sc,imageLocation=:imgl",
     ExpressionAttributeValues: {
       ":q": question.question,
       ":a": question.answer,
@@ -65,6 +65,7 @@ const updateQuestion = async (question) => {
         question.question.toLowerCase() + " " + question.answer.toLowerCase(),
       ":dt": question.dateLog,
       ":sc": question.secondary,
+      ":imgl": imageLocation,
     },
   };
   return await dynamoClient.update(params).promise();
