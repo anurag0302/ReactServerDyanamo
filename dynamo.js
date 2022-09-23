@@ -57,7 +57,7 @@ const updateQuestion = async (question,imageLocation) => {
       questionId: question.id,
     },
     UpdateExpression:
-      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,secondary=:sc,imageLocation=:imgl",
+      "set question = :q, answer = :a, qa = :qa, dateLog = :dt,secondary=:sc,imageLocation = :imgl",
     ExpressionAttributeValues: {
       ":q": question.question,
       ":a": question.answer,

@@ -113,19 +113,15 @@ app.post("/questions",upload, async (req, res) => {
 });
 
 app.put("/questions/:id",upload, async (req, res) => {
-  console.log("yesy")
-
   const question = JSON.parse(req.body.data);
-
   let imageLocation="null";
   if(req.file){ 
     imageLocation="http://localhost:5000/profile/"+req.file.filename;
-    
   }
   else{
-    imageLocation=question.secondary.imgdata
+   imageLocation=question.imgLocation
   }
-
+  
   
   const { id } = req.params;
   question.id = id;
