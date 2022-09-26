@@ -60,9 +60,9 @@ const updateUser = async (user) => {
       id: user.id,
     },
     UpdateExpression:
-      "set fullName = :fullName,rolePosition = :rolePosition",
+      "set rolePosition = :rolePosition",
     ExpressionAttributeValues: {
-      ":fullName": user.fullName,
+      
       ":rolePosition": user.rolePosition,
     },
   };
