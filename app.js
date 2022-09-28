@@ -1,7 +1,11 @@
+require('dotenv').config();
+const bodyParser = require('body-parser');
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const jwt = require('jsonwebtoken');
+const utils = require('./utils');
 const { 
   v4: uuidv4,
 } = require('uuid');
@@ -173,7 +177,12 @@ app.post("/logininfo", async (req, res) => {
   try {
     const newUser = await login(req.body);
     if(newUser.Item.password===password){
-      res.json(newUser);
+      const token = utils.generateToken(newUser.Item);
+      // get basic user details
+      const userObj = utils.getCleanUser(newUser.Item);
+      // return the token along with user details
+      return res.json({ Item: userObj, token });
+      //return res.json(newUser)
     }
     else{
       res.status(500).json({ err: "Invalid cred Found" });
