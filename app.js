@@ -1,18 +1,15 @@
-require('dotenv').config();
-const bodyParser = require('body-parser');
+require("dotenv").config();
+const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
-const jwt = require('jsonwebtoken');
-const utils = require('./utils');
-const { 
-  v4: uuidv4,
-} = require('uuid');
-
+const jwt = require("jsonwebtoken");
+const utils = require("./utils");
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use("/profile", express.static("upload"));
 const {
   addOrUpdateQuestion,
@@ -29,7 +26,7 @@ const {
   addUser,
   deleteUser,
   updateUser,
-  getUserById
+  getUserById,
 } = require("./userinfo");
 
 app.use(express.json());
@@ -61,20 +58,19 @@ app.get("/questions/:id", async (req, res) => {
 });
 
 app.get("/questionsans/:data", async (req, res) => {
-    const data = req.params.data;
-    
-    try {
-      const question = await getSearchResult(data);
-      
-      res.json(question);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ err: "Something went wrong" });
-    }
-  });
+  const data = req.params.data;
 
+  try {
+    const question = await getSearchResult(data);
 
-  //storage---------------------------------------
+    res.json(question);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+//storage---------------------------------------
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const value = "upload/";
@@ -91,22 +87,29 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }).single("image");
 
+app.post("/questions", upload, async (req, res) => {
+  const { question, answer, status, dateLog, secondary } = JSON.parse(
+    req.body.data
+  );
 
-app.post("/questions",upload, async (req, res) => {
- 
-
-  const {question,answer,status,dateLog,secondary} = JSON.parse(req.body.data);
-
-  let imageLocation="null";
-  if(req.file){ 
-    imageLocation="http://localhost:5000/profile/"+req.file.filename;
-    console.log(imageLocation)
+  let imageLocation = "null";
+  if (req.file) {
+    imageLocation = "http://localhost:5000/profile/" + req.file.filename;
+    console.log(imageLocation);
   }
-  
-  
-  let id=uuidv4();
-  const qa=question.toLowerCase()+" "+answer.toLowerCase();
-  const data={question:question,answer:answer,questionId:id,qa: qa,status:status,dateLog:dateLog,secondary:secondary,imageLocation:imageLocation}
+
+  let id = uuidv4();
+  const qa = question.toLowerCase() + " " + answer.toLowerCase();
+  const data = {
+    question: question,
+    answer: answer,
+    questionId: id,
+    qa: qa,
+    status: status,
+    dateLog: dateLog,
+    secondary: secondary,
+    imageLocation: imageLocation,
+  };
   try {
     const newQuestion = await addOrUpdateQuestion(data);
     res.json(newQuestion);
@@ -116,21 +119,19 @@ app.post("/questions",upload, async (req, res) => {
   }
 });
 
-app.put("/questions/:id",upload, async (req, res) => {
+app.put("/questions/:id", upload, async (req, res) => {
   const question = JSON.parse(req.body.data);
-  let imageLocation="null";
-  if(req.file){ 
-    imageLocation="http://localhost:5000/profile/"+req.file.filename;
+  let imageLocation = "null";
+  if (req.file) {
+    imageLocation = "http://localhost:5000/profile/" + req.file.filename;
+  } else {
+    imageLocation = question.imgLocation;
   }
-  else{
-   imageLocation=question.imgLocation
-  }
-  
-  
+
   const { id } = req.params;
   question.id = id;
   try {
-    const newQuestion = await updateQuestion(question,imageLocation);
+    const newQuestion = await updateQuestion(question, imageLocation);
     res.json(newQuestion);
   } catch (err) {
     console.error(err);
@@ -171,36 +172,35 @@ app.get("/userinfo/:id", async (req, res) => {
   }
 });
 
-
 app.post("/logininfo", async (req, res) => {
-  const {id,password} = req.body;
+  const { id, password } = req.body;
   try {
     const newUser = await login(req.body);
-    if(newUser.Item.password===password){
+    if (newUser.Item.password === password) {
       const token = utils.generateToken(newUser.Item);
       // get basic user details
       const userObj = utils.getCleanUser(newUser.Item);
       // return the token along with user details
       return res.json({ Item: userObj, token });
       //return res.json(newUser)
-    }
-    else{
+    } else {
       res.status(500).json({ err: "Invalid cred Found" });
     }
-    
   } catch (err) {
     console.error(err);
     res.status(500).json({ err: "Something went wrong" });
   }
 });
 
-
 app.post("/userinfo", async (req, res) => {
+  const { id, fullName, password, rolePosition } = req.body;
 
-  const {id,fullName,password,rolePosition} = req.body;
-  
-  
-  const data={id:id,fullName:fullName,password:password,rolePosition:rolePosition}
+  const data = {
+    id: id,
+    fullName: fullName,
+    password: password,
+    rolePosition: rolePosition,
+  };
   try {
     const newUser = await addUser(data);
     res.json(newUser);
@@ -209,6 +209,33 @@ app.post("/userinfo", async (req, res) => {
     res.status(500).json({ err: "Something went wrong" });
   }
 });
+
+//==================================================================
+
+app.post("/tokeninfo", async (req, res) => {
+  
+  const {token} = req.body;
+
+  
+  
+  try {
+    var decodedClaims = jwt.verify(token, process.env.JWT_SECRET);
+    const newUser = await login(decodedClaims);
+    if (newUser.Item.password === password) {
+      const userObj = utils.getCleanUser(newUser.Item);
+     
+      return res.json({ Item: userObj });
+      //return res.json(newUser)
+    } else {
+      res.status(500).json({ err: "Invalid cred Found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Something went wrong" });
+  }
+});
+
+//==================================================================
 
 app.put("/userinfo/:id", async (req, res) => {
   const user = req.body;
@@ -233,13 +260,6 @@ app.delete("/userinfo/:id", async (req, res) => {
     res.status(500).json({ err: "Something went wrong" });
   }
 });
-
-
-
-
-
-
-
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
