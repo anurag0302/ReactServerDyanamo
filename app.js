@@ -216,10 +216,9 @@ app.post("/tokeninfo", async (req, res) => {
   
   const {token} = req.body;
 
-  
-  
+  var decodedClaims = jwt.verify(token, process.env.JWT_SECRET);
+  const { id, password } = decodedClaims;
   try {
-    var decodedClaims = jwt.verify(token, process.env.JWT_SECRET);
     const newUser = await login(decodedClaims);
     if (newUser.Item.password === password) {
       const userObj = utils.getCleanUser(newUser.Item);
