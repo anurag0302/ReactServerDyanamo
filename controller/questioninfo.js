@@ -1,16 +1,4 @@
-const elasticsearch = require("@elastic/elasticsearch");
-const { createConnector } = require("aws-elasticsearch-js");
-
-const region = "ap-south-1";
-const domain = "http://localhost:8000";
-
-const client = new elasticsearch.Client({
-  nodes: [domain],
-  Connection: createConnector({ region }),
-});
-
-const { dynamoClient, docClient } = require("./connection");
-
+const { dynamoClient, docClient } = require("../config/connection");
 const TABLE_NAME = "QuestionAnswer";
 const getQuestions = async () => {
   const params = {
@@ -34,23 +22,22 @@ const getQuestionById = async (id) => {
 const getSearchResult = async (data) => {
   const params = {
     TableName: TABLE_NAME,
-    FilterExpression: "contains(qa, :qa)",   
+    FilterExpression: "contains(qa, :qa)",
     ExpressionAttributeValues: {
-      ":qa": { S: data },   
+      ":qa": { S: data },
     },
   };
   return await docClient.scan(params).promise();
 };
 
 const addOrUpdateQuestion = async (question) => {
-  
   const params = {
     TableName: TABLE_NAME,
     Item: question,
   };
   return await dynamoClient.put(params).promise();
 };
-const updateQuestion = async (question,imageLocation) => {
+const updateQuestion = async (question, imageLocation) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -88,5 +75,5 @@ module.exports = {
   addOrUpdateQuestion,
   getSearchResult,
   deleteQuestion,
-  updateQuestion
+  updateQuestion,
 };

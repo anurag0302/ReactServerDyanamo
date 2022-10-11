@@ -1,5 +1,4 @@
-
-const { dynamoClient, docClient } = require("./connection");
+const { dynamoClient, docClient } = require("../config/connection");
 
 const TABLE_NAME = "UsersInfo";
 
@@ -21,11 +20,6 @@ const getUserById = async (id) => {
   return await dynamoClient.get(params).promise();
 };
 
-
-
-
-
-
 const login = async (data) => {
   const params = {
     TableName: TABLE_NAME,
@@ -35,20 +29,17 @@ const login = async (data) => {
     // FilterExpression: "password = :pass",
     // ExpressionAttributeValues: {
     //     ":pass" : data.password
-    // } 
-    
+    // }
   };
   return await dynamoClient.get(params).promise();
 };
 
-
-
 const addUser = async (userinfo) => {
-  console.log(userinfo.id)
+  console.log(userinfo.id);
   const params = {
     TableName: TABLE_NAME,
     Item: userinfo,
-    ConditionExpression:'attribute_not_exists(id)'
+    ConditionExpression: "attribute_not_exists(id)",
   };
   return await dynamoClient.put(params).promise();
 };
@@ -59,10 +50,8 @@ const updateUser = async (user) => {
     Key: {
       id: user.id,
     },
-    UpdateExpression:
-      "set rolePosition = :rolePosition",
+    UpdateExpression: "set rolePosition = :rolePosition",
     ExpressionAttributeValues: {
-      
       ":rolePosition": user.rolePosition,
     },
   };
@@ -80,12 +69,10 @@ const deleteUser = async (id) => {
 };
 
 module.exports = {
- getUsers,
- login,
- addUser,
- updateUser,
- deleteUser,
- getUserById
- 
- 
+  getUsers,
+  login,
+  addUser,
+  updateUser,
+  deleteUser,
+  getUserById,
 };
